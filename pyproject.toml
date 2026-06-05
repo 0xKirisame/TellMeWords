@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tellmewords"
+version = "0.1.0"
+description = "Zero-payload steganography via opportunistic codebook derivation"
+requires-python = ">=3.11"
+dependencies = [
+    "yt-dlp>=2024.1.0",
+    "ffmpeg-python>=0.2.0",
+    "scipy>=1.11.0",
+    "numpy>=1.26.0",
+    "librosa>=0.10.0",
+    "reedsolo>=1.7.0",
+    "sortedcontainers>=2.4.0",
+    "requests>=2.31.0",
+]
+
+[project.scripts]
+tellmewords = "tellmewords.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tellmewords*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "network: marks tests that require network access (deselect with -m 'not network')",
+]
+testpaths = ["tests"]

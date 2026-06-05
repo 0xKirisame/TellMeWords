@@ -1,0 +1,950 @@
+{
+  "ustx_version": "0.6",
+  "name": "ghost_comet_tuning_yvgb",
+  "comment": "Pitch correction and envelope tuning for performance render",
+  "bpm": 135.2,
+  "beat_per_bar": 4,
+  "beat_unit": 4,
+  "resolution": 480,
+  "track_source": {
+    "url": "https://www.youtube.com/watch?v=OFFLINE_DEMO",
+    "checksum": "offline",
+    "format": "wav/pcm_s16le/44100/stereo"
+  },
+  "engine_params": {
+    "tolerance_mode": 0,
+    "reverb_tail": 10,
+    "render_engine": "worldline-r",
+    "pitch_mode": "rapped"
+  },
+  "voice_bank": "Momo_Momone_v3.1",
+  "tracks": [
+    {
+      "track_no": 0,
+      "phoneme_sequence": "p zy o u by i w py t t t k d ng py i gy m zy ts a v v v y h ch z r ch my py r sh cl ng my h z ry h ry f s e ry",
+      "notes": [
+        {
+          "position": 480,
+          "duration": 240,
+          "phoneme": "p",
+          "tone": "E4",
+          "pbys": 1319,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 101,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 720,
+          "duration": 240,
+          "phoneme": "zy",
+          "tone": "B4",
+          "pbys": 1181,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 103,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 960,
+          "duration": 480,
+          "phoneme": "o",
+          "tone": "B4",
+          "pbys": 16,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 97,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 1440,
+          "duration": 240,
+          "phoneme": "u",
+          "tone": "D4",
+          "pbys": 282,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 109,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 1680,
+          "duration": 480,
+          "phoneme": "by",
+          "tone": "D4",
+          "pbys": 260,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 98,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 2160,
+          "duration": 240,
+          "phoneme": "i",
+          "tone": "D5",
+          "pbys": 6,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 101,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 2400,
+          "duration": 240,
+          "phoneme": "w",
+          "tone": "F4",
+          "pbys": 49,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 85,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 2640,
+          "duration": 480,
+          "phoneme": "py",
+          "tone": "C5",
+          "pbys": 336,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 96,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 3120,
+          "duration": 240,
+          "phoneme": "t",
+          "tone": "D5",
+          "pbys": 58,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 91,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 3360,
+          "duration": 480,
+          "phoneme": "t",
+          "tone": "F4",
+          "pbys": 146,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 104,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 3840,
+          "duration": 240,
+          "phoneme": "t",
+          "tone": "E4",
+          "pbys": 121,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 102,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 4080,
+          "duration": 720,
+          "phoneme": "k",
+          "tone": "E5",
+          "pbys": 491,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 99,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 4800,
+          "duration": 720,
+          "phoneme": "d",
+          "tone": "E5",
+          "pbys": 97,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 90,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 5520,
+          "duration": 720,
+          "phoneme": "ng",
+          "tone": "C5",
+          "pbys": 309,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 102,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 6240,
+          "duration": 960,
+          "phoneme": "py",
+          "tone": "G5",
+          "pbys": 666,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 87,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 7200,
+          "duration": 960,
+          "phoneme": "i",
+          "tone": "A4",
+          "pbys": 239,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 112,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 8160,
+          "duration": 480,
+          "phoneme": "gy",
+          "tone": "F4",
+          "pbys": 461,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 102,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 8640,
+          "duration": 720,
+          "phoneme": "m",
+          "tone": "G4",
+          "pbys": 82,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 95,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 9360,
+          "duration": 720,
+          "phoneme": "zy",
+          "tone": "D4",
+          "pbys": 414,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 102,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 10080,
+          "duration": 480,
+          "phoneme": "ts",
+          "tone": "D5",
+          "pbys": 1269,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 93,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 10560,
+          "duration": 480,
+          "phoneme": "a",
+          "tone": "A4",
+          "pbys": 293,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 114,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 11040,
+          "duration": 480,
+          "phoneme": "v",
+          "tone": "B4",
+          "pbys": 74,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 111,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 11520,
+          "duration": 720,
+          "phoneme": "v",
+          "tone": "F4",
+          "pbys": 586,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 94,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 12240,
+          "duration": 240,
+          "phoneme": "v",
+          "tone": "E5",
+          "pbys": 704,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 98,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 12480,
+          "duration": 240,
+          "phoneme": "y",
+          "tone": "F4",
+          "pbys": 596,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 91,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 12720,
+          "duration": 480,
+          "phoneme": "h",
+          "tone": "F5",
+          "pbys": 507,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 99,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 13200,
+          "duration": 480,
+          "phoneme": "ch",
+          "tone": "D5",
+          "pbys": 1212,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 85,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 13680,
+          "duration": 240,
+          "phoneme": "z",
+          "tone": "F4",
+          "pbys": 940,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 114,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 13920,
+          "duration": 480,
+          "phoneme": "r",
+          "tone": "F5",
+          "pbys": 212,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 92,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 14400,
+          "duration": 720,
+          "phoneme": "ch",
+          "tone": "F5",
+          "pbys": 349,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 114,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 15120,
+          "duration": 480,
+          "phoneme": "my",
+          "tone": "G5",
+          "pbys": 222,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 96,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 15600,
+          "duration": 480,
+          "phoneme": "py",
+          "tone": "F4",
+          "pbys": 681,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 104,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 16080,
+          "duration": 960,
+          "phoneme": "r",
+          "tone": "D4",
+          "pbys": 163,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 114,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 17040,
+          "duration": 480,
+          "phoneme": "sh",
+          "tone": "F5",
+          "pbys": 475,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 98,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 17520,
+          "duration": 720,
+          "phoneme": "cl",
+          "tone": "F4",
+          "pbys": 1053,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 85,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 18240,
+          "duration": 720,
+          "phoneme": "ng",
+          "tone": "A4",
+          "pbys": 377,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 96,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 18960,
+          "duration": 960,
+          "phoneme": "my",
+          "tone": "G4",
+          "pbys": 816,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 115,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 19920,
+          "duration": 240,
+          "phoneme": "h",
+          "tone": "G4",
+          "pbys": 1010,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 108,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 20160,
+          "duration": 960,
+          "phoneme": "z",
+          "tone": "E5",
+          "pbys": 1376,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 104,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 21120,
+          "duration": 960,
+          "phoneme": "ry",
+          "tone": "A4",
+          "pbys": 1443,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 88,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 22080,
+          "duration": 480,
+          "phoneme": "h",
+          "tone": "G4",
+          "pbys": 546,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 112,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 22560,
+          "duration": 240,
+          "phoneme": "ry",
+          "tone": "F4",
+          "pbys": 923,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 108,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 22800,
+          "duration": 480,
+          "phoneme": "f",
+          "tone": "F5",
+          "pbys": 635,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 90,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 23280,
+          "duration": 240,
+          "phoneme": "s",
+          "tone": "E4",
+          "pbys": 29,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 93,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 23520,
+          "duration": 720,
+          "phoneme": "e",
+          "tone": "C4",
+          "pbys": 1704,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 114,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        },
+        {
+          "position": 24240,
+          "duration": 240,
+          "phoneme": "ry",
+          "tone": "G4",
+          "pbys": 643,
+          "pbys_offset": 0,
+          "pby_mode": "curve",
+          "velocity": 0,
+          "volume": 92,
+          "envelope": [
+            0,
+            5,
+            35,
+            0,
+            100,
+            100,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "_v": "1.0"
+}

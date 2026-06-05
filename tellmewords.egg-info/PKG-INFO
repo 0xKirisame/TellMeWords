@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: tellmewords
+Version: 0.1.0
+Summary: Zero-payload steganography via opportunistic codebook derivation
+Requires-Python: >=3.11
+Requires-Dist: yt-dlp>=2024.1.0
+Requires-Dist: ffmpeg-python>=0.2.0
+Requires-Dist: scipy>=1.11.0
+Requires-Dist: numpy>=1.26.0
+Requires-Dist: librosa>=0.10.0
+Requires-Dist: reedsolo>=1.7.0
+Requires-Dist: sortedcontainers>=2.4.0
+Requires-Dist: requests>=2.31.0

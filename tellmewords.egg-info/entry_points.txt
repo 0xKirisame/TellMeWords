@@ -1,0 +1,2 @@
+[console_scripts]
+tellmewords = tellmewords.__main__:main
