@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import random
 import string
-from dataclasses import dataclass, asdict
+import zlib
+from dataclasses import dataclass
 from typing import Any
 
 import requests
@@ -13,7 +15,7 @@ import requests
 from tellmewords.codebook import CoordinateEntry
 
 
-VERSION = "1.0"
+VERSION = "1.1"
 
 # UTAU note envelope shape (realistic default)
 _DEFAULT_ENVELOPE = [0, 5, 35, 0, 100, 100, 0]
@@ -45,44 +47,75 @@ class TuningConfig:
 
 
 # ---------------------------------------------------------------------------
+# Coordinate packing (binary, compressed)
+# ---------------------------------------------------------------------------
+
+def _put_varint(buf: bytearray, value: int) -> None:
+    """Append an unsigned LEB128 varint."""
+    while True:
+        b = value & 0x7F
+        value >>= 7
+        if value:
+            buf.append(b | 0x80)
+        else:
+            buf.append(b)
+            return
+
+
+def _get_varint(data: bytes, offset: int) -> tuple[int, int]:
+    """Read an unsigned LEB128 varint. Returns (value, new_offset)."""
+    result = 0
+    shift = 0
+    while True:
+        b = data[offset]
+        offset += 1
+        result |= (b & 0x7F) << shift
+        if not (b & 0x80):
+            return result, offset
+        shift += 7
+
+
+def pack_coordinates(coordinates: list[CoordinateEntry]) -> str:
+    """Pack coordinates into a compact base64 string.
+
+    Layout per entry (payload order): zigzag-varint(position delta from the
+    previous entry) + 1 raw correction-mask byte. The stream is then
+    zlib-compressed and base64-encoded — roughly 10-15x smaller than one JSON
+    object per note.
+    """
+    buf = bytearray()
+    prev_pos = 0
+    for entry in coordinates:
+        delta = entry.position - prev_pos
+        _put_varint(buf, (delta << 1) ^ (delta >> 63))  # zigzag
+        buf.append(entry.correction_mask & 0xFF)
+        prev_pos = entry.position
+    return base64.b64encode(zlib.compress(bytes(buf), 9)).decode("ascii")
+
+
+def unpack_coordinates(packed: str) -> list[CoordinateEntry]:
+    """Inverse of pack_coordinates."""
+    data = zlib.decompress(base64.b64decode(packed))
+    coordinates: list[CoordinateEntry] = []
+    offset = 0
+    position = 0
+    while offset < len(data):
+        zz, offset = _get_varint(data, offset)
+        delta = (zz >> 1) ^ -(zz & 1)
+        position += delta
+        mask = data[offset]
+        offset += 1
+        coordinates.append(CoordinateEntry(position=position, correction_mask=mask))
+    return coordinates
+
+
+# ---------------------------------------------------------------------------
 # Serialization
 # ---------------------------------------------------------------------------
 
 def serialize(config: TuningConfig, rng_seed: int | None = None) -> str:
     """Serialize TuningConfig to a UTAU-disguised JSON string."""
     rng = random.Random(rng_seed)
-
-    def _random_phoneme() -> str:
-        return rng.choice(_PHONEMES)
-
-    def _random_tone() -> str:
-        return rng.choice(_TONES)
-
-    def _random_volume() -> int:
-        return rng.randint(85, 115)
-
-    notes = []
-    position_in_score = 480  # UTAU score position (ticks), advance per note
-
-    for i, entry in enumerate(config.coordinate_list):
-        # Split sample position into low 16 bits and high bits
-        pbys = entry.position & 0xFFFF
-        pbys_offset = entry.position >> 16
-
-        note = {
-            "position": position_in_score,
-            "duration": rng.choice([240, 480, 720, 960]),
-            "phoneme": _random_phoneme(),
-            "tone": _random_tone(),
-            "pbys": pbys,
-            "pbys_offset": pbys_offset,
-            "pby_mode": "curve",
-            "velocity": entry.correction_mask,
-            "volume": _random_volume(),
-            "envelope": _DEFAULT_ENVELOPE[:],
-        }
-        notes.append(note)
-        position_in_score += note["duration"]
 
     doc: dict[str, Any] = {
         "ustx_version": "0.6",
@@ -104,21 +137,20 @@ def serialize(config: TuningConfig, rng_seed: int | None = None) -> str:
             "pitch_mode": "rapped",
         },
         "voice_bank": rng.choice(_VOICE_BANKS),
-        "tracks": [
-            {
-                "track_no": 0,
-                "phoneme_sequence": " ".join(n["phoneme"] for n in notes),
-                "notes": notes,
-            }
-        ],
+        # Compressed pitch-bend sample stream: zigzag-varint deltas + mask bytes
+        "pbys_stream": pack_coordinates(config.coordinate_list),
         "_v": VERSION,
     }
 
-    return json.dumps(doc, ensure_ascii=False, indent=2)
+    return json.dumps(doc, ensure_ascii=False)
 
 
 def deserialize(json_str: str) -> TuningConfig:
-    """Parse a UTAU-disguised JSON string back into a TuningConfig."""
+    """Parse a UTAU-disguised JSON string back into a TuningConfig.
+
+    Supports both the compressed stream format (v1.1+) and the legacy
+    per-note JSON format (v1.0).
+    """
     doc = json.loads(json_str)
 
     youtube_url = doc["track_source"]["url"]
@@ -127,11 +159,14 @@ def deserialize(json_str: str) -> TuningConfig:
     rs_nsym     = doc["engine_params"]["reverb_tail"]
     version     = doc.get("_v", "1.0")
 
-    coordinates = []
-    for note in doc["tracks"][0]["notes"]:
-        position = note["pbys"] | (note["pbys_offset"] << 16)
-        correction_mask = note["velocity"]
-        coordinates.append(CoordinateEntry(position=position, correction_mask=correction_mask))
+    if "pbys_stream" in doc:
+        coordinates = unpack_coordinates(doc["pbys_stream"])
+    else:
+        coordinates = []
+        for note in doc["tracks"][0]["notes"]:
+            position = note["pbys"] | (note["pbys_offset"] << 16)
+            correction_mask = note["velocity"]
+            coordinates.append(CoordinateEntry(position=position, correction_mask=correction_mask))
 
     return TuningConfig(
         version=version,

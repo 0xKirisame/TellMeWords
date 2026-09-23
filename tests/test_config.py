@@ -32,9 +32,15 @@ def test_serialize_has_utau_fields():
     assert "ustx_version" in doc
     assert "bpm" in doc
     assert "voice_bank" in doc
-    assert "tracks" in doc
-    assert len(doc["tracks"]) == 1
-    assert "notes" in doc["tracks"][0]
+    assert "pbys_stream" in doc
+
+
+def test_packed_stream_roundtrip_exact():
+    cfg = _make_config(30)
+    cfg2 = deserialize(serialize(cfg, rng_seed=7))
+    assert [(c.position, c.correction_mask) for c in cfg2.coordinate_list] == [
+        (c.position, c.correction_mask) for c in cfg.coordinate_list
+    ]
 
 
 def test_deserialize_roundtrip():
@@ -71,8 +77,8 @@ def test_large_position_survives_roundtrip():
 
 def test_note_count_matches_coordinate_list():
     cfg = _make_config(42)
-    doc = json.loads(serialize(cfg, rng_seed=99))
-    assert len(doc["tracks"][0]["notes"]) == 42
+    cfg2 = deserialize(serialize(cfg, rng_seed=99))
+    assert len(cfg2.coordinate_list) == 42
 
 
 def test_youtube_url_preserved():

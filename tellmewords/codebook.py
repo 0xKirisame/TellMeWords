@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import bisect
 from collections import deque
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Sequence
 
 
@@ -113,10 +112,11 @@ def encode_message(
 ) -> list[CoordinateEntry]:
     """Map each byte in padded_payload to a CoordinateEntry using the index.
 
-    Guarantees no two assigned positions overlap within an 8-sample window.
+    Overlapping windows are allowed: each coordinate independently extracts its
+    own 8-LSB window at decode time, so sharing samples between entries is safe
+    and raises effective capacity ~8x.
     Raises InsufficientCapacityError if any byte value has no available positions.
     """
-    used: list[int] = []  # sorted list of assigned positions, for bisect overlap checks
     coordinates: list[CoordinateEntry] = []
 
     for byte_val in padded_payload:
@@ -126,53 +126,12 @@ def encode_message(
                 f"No positions available for byte value 0x{byte_val:02x}"
             )
 
-        position = _pop_non_overlapping(q, used)
-        if position is None:
-            raise InsufficientCapacityError(
-                f"Positions for byte 0x{byte_val:02x} all overlap with already-used positions"
-            )
-
+        position = q.popleft()
         b_nat = _extract_byte_at(pcm, position)
         correction_mask = b_nat ^ byte_val
         coordinates.append(CoordinateEntry(position=position, correction_mask=correction_mask))
-        _insert_sorted(used, position)
 
     return coordinates
-
-
-def _pop_non_overlapping(q: deque[int], used_sorted: list[int]) -> int | None:
-    """Pop the first position from q that doesn't overlap (±7) with any used position."""
-    attempts = []
-    result = None
-
-    while q:
-        p = q.popleft()
-        if _overlaps(p, used_sorted):
-            attempts.append(p)
-        else:
-            result = p
-            break
-
-    # Return discarded positions to the front of the deque (in reverse order)
-    for p in reversed(attempts):
-        q.appendleft(p)
-
-    return result
-
-
-def _overlaps(position: int, used_sorted: list[int]) -> bool:
-    """Return True if position is within 7 samples of any used position."""
-    # Find insertion point; check neighbors
-    idx = bisect.bisect_left(used_sorted, position - 7)
-    while idx < len(used_sorted) and used_sorted[idx] <= position + 7:
-        if abs(used_sorted[idx] - position) <= 7:
-            return True
-        idx += 1
-    return False
-
-
-def _insert_sorted(lst: list[int], value: int) -> None:
-    bisect.insort(lst, value)
 
 
 # ---------------------------------------------------------------------------

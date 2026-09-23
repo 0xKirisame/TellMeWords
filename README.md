@@ -40,6 +40,44 @@ Encoding is a lookup: for each message byte, record *where* that byte naturally 
 
 Reed-Solomon error correction handles minor divergence between sender and receiver downloads (different CDN nodes, ffmpeg version rounding). Hamming-distance tolerance in the codebook lookup (`--hamming 1|2`) extends coverage to near-matches, storing a one-byte correction mask in the config.
 
+Two capacity optimizations: **overlapping windows** are allowed (each coordinate independently extracts its own 8-LSB window, so sharing samples between entries raises effective capacity ~8×), and coordinates are stored as a **compressed binary stream** (zigzag-varint position deltas + mask bytes, zlib-compressed) — roughly 50× smaller than per-note JSON.
+
+---
+
+## Carrier Benchmark
+
+How much can you store, and which kind of audio carries it best? Measured with `tellmewords analyze` across nine real YouTube carriers (worst-case = message may be any byte pattern; English estimate = natural-language heuristic):
+
+| Carrier | Type | Duration | Coverage | Worst case | B/min | Efficiency* | Verdict |
+|---|---|---|---|---|---|---|---|
+| sanctuaryOS | lo-fi mix | 46:37 | 98.8% | 463.7 KB | 10,185 | 98.5% | EXCELLENT |
+| Who Let the Dogs Out | pop/hip-hop | 3:31 | 99.4% | 34.9 KB | 10,137 | 98.1% | EXCELLENT |
+| Mockingbird (Eminem) | hip-hop ballad | 4:18 | 99.3% | 42.5 KB | 10,118 | 97.9% | EXCELLENT |
+| out of gravity (Miku) | Vocaloid song | 4:23 | 99.0% | 43.3 KB | 10,090 | 97.6% | EXCELLENT |
+| KONNAN janai (Yakuza 5) | Yakuza karaoke | 5:17 | 98.7% | 53.2 KB | 10,076 | 97.5% | EXCELLENT |
+| melancholic (Rin) | Vocaloid song | 3:40 | 98.3% | 35.8 KB | 10,010 | 96.8% | EXCELLENT |
+| veritasium video | narrated + music bed | 14:35 | 96.1% | 140.6 KB | 9,876 | 95.5% | EXCELLENT |
+| rolling girl (Miku) | Vocaloid song | 3:16 | 95.6% | 31.0 KB | 9,719 | 94.0% | GOOD |
+| Lamport TLA+ tutorial | pure lecture | 20:18 | 71.3% | 144.9 KB | 7,308 | 70.7% | MARGINAL |
+
+\* % of the theoretical ceiling of 44100 × 60 / 256 ≈ **10,336 B/min** (all samples usable, perfectly uniform byte distribution).
+
+**Findings:**
+
+- **All continuous music converges to ~10,100 ±200 B/min (94–98.5% of ceiling).** Once LSB entropy saturates at 8 bits, capacity is effectively `duration × 44100 / 256` minus a few percent for region trims. Genre doesn't matter.
+- **Speech with gaps pays ~29%**: pauses between sentences get gated out by RMS segmentation, and digital silence has degenerate LSBs (all-zero windows). A constant music bed under narration recovers most of the loss.
+- In natural English text, dense music carries **~60 KB/min ≈ ~10,000 words/min** worst-case.
+- Pick carriers for deniability, not efficiency — choose longer tracks only when one gist must hold more absolute bytes.
+
+Score any candidate yourself:
+
+```bash
+tellmewords analyze --url "https://www.youtube.com/watch?v=<id>"
+tellmewords analyze --url "..." --json   # machine-readable report
+```
+
+Report includes duration, usable-region coverage, window count, LSB entropy, rarest-byte count, capacity estimates, and a density-normalized verdict.
+
 ---
 
 ## Prior Art Comparison
@@ -164,19 +202,17 @@ Expected output:
 
 ## How the Tuning Config Is Disguised
 
-The coordinate list is serialized as a UTAU `.ustx`-style JSON document. A real UTAU tuning file contains BPM, phoneme sequences, per-note pitch correction curves (PBY arrays), velocity, and envelope shapes. TellMeWords config maps onto these fields:
+The coordinate list is serialized as a UTAU `.ustx`-style JSON document. A real UTAU tuning file contains BPM, voice bank metadata, phoneme sequences, and pitch correction parameters. TellMeWords config maps onto these fields:
 
 | TellMeWords field | UTAU field | Notes |
 |---|---|---|
-| Sample position (low 16 bits) | `notes[i].pbys` | Pitch bend Y value |
-| Sample position (high bits) | `notes[i].pbys_offset` | Coarse tuning offset |
-| Correction mask | `notes[i].velocity` | 0 for exact matches |
+| All coordinates (packed) | `pbys_stream` | Zigzag-varint position deltas + mask bytes, zlib + base64 |
 | YouTube URL | `track_source.url` | Source track reference |
 | Audio SHA-256 | `track_source.checksum` | Render reference hash |
 | Hamming tolerance | `engine_params.tolerance_mode` | Tuning mode flag |
 | RS parity count | `engine_params.reverb_tail` | Reverb tail length |
 
-A real UTAU tuning export for a 2-minute song contains 100–200 notes. A TellMeWords config for a 100-byte message contains ~130 entries — indistinguishable in structure.
+The compressed stream keeps configs small enough to stay plausible: 27,248 coordinates (a 20 KB message) serialize to ~105 KB of JSON, versus ~5.9 MB with one JSON note object per coordinate. Legacy v1.0 per-note configs (`notes[i].pbys` / `pbys_offset` / `velocity`) are still readable for backward compatibility.
 
 ---
 
@@ -186,19 +222,20 @@ A real UTAU tuning export for a 2-minute song contains 100–200 notes. A TellMe
 tellmewords/
 ├── tellmewords/
 │   ├── audio.py       # Download (yt-dlp API), PCM decode, RMS segmentation
+│   ├── analyze.py     # Oracle usability scoring: coverage, entropy, capacity
 │   ├── codebook.py    # Inverted index construction, encode, decode
-│   ├── config.py      # TuningConfig dataclass, UTAU JSON schema, Gist I/O
+│   ├── config.py      # TuningConfig dataclass, packed UTAU JSON, Gist I/O
 │   ├── ec.py          # Reed-Solomon encode/decode (reedsolo)
 │   ├── sender.py      # Encode pipeline
 │   ├── receiver.py    # Decode pipeline
-│   └── __main__.py    # CLI entry point
+│   └── __main__.py    # CLI entry point (encode/decode/verify/index/analyze)
 ├── demo/
 │   └── demo.py        # BlackHat demo script (--offline mode included)
 └── tests/
     ├── test_roundtrip.py      # End-to-end encode → decode
     ├── test_ec.py             # Reed-Solomon correctness
     ├── test_audio.py          # Segmentation logic
-    ├── test_config.py         # UTAU JSON schema round-trips
+    ├── test_config.py         # Config packing round-trips + legacy format
     └── test_crossplatform.py  # Determinism across runs
 ```
 

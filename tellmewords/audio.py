@@ -33,6 +33,12 @@ _FFMPEG_SEARCH_PATHS = [
     "/usr/bin/ffmpeg",
 ]
 
+_YTDLP_AUDIO_FORMATS = [
+    "bestaudio[format_id=251]",
+    "bestaudio[format_id=140]",
+    "bestaudio",
+]
+
 
 def _ffmpeg_bin() -> str:
     """Return the path to the ffmpeg binary, searching common locations."""
@@ -68,21 +74,47 @@ def download(youtube_url: str, cache_dir: Path | None = None) -> tuple[np.ndarra
     return _wav_to_pcm(wav_bytes), sha256
 
 
+class _StderrLogger:
+    """Redirect yt-dlp output to stderr so stdout stays clean for config JSON."""
+    def debug(self, msg: str) -> None:
+        pass
+    def info(self, msg: str) -> None:
+        import sys
+        print(msg, file=sys.stderr)
+    def warning(self, msg: str) -> None:
+        import sys
+        print(msg, file=sys.stderr)
+    def error(self, msg: str) -> None:
+        import sys
+        print(msg, file=sys.stderr)
+
+
 def _ytdlp_download(youtube_url: str, work_dir: Path, url_hash: str) -> Path:
     """Download audio using yt-dlp Python API. Returns path to downloaded file."""
     import yt_dlp
 
     out_template = str(work_dir / f"{url_hash}.audio.%(ext)s")
-    ydl_opts = {
-        "format": "bestaudio[format_id=251]/bestaudio[format_id=140]/bestaudio",
-        "outtmpl": out_template,
-        "noplaylist": True,
-        "quiet": False,
-        "no_warnings": False,
-    }
+    last_error: Exception | None = None
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([youtube_url])
+    for format_selector in _YTDLP_AUDIO_FORMATS:
+        ydl_opts = {
+            "format": format_selector,
+            "outtmpl": out_template,
+            "noplaylist": True,
+            "quiet": True,
+            "no_warnings": True,
+            "logger": _StderrLogger(),
+        }
+
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([youtube_url])
+            break
+        except yt_dlp.utils.DownloadError as err:
+            last_error = err
+    else:
+        assert last_error is not None
+        raise last_error
 
     candidates = list(work_dir.glob(f"{url_hash}.audio.*"))
     if not candidates:

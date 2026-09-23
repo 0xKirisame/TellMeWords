@@ -1,9 +1,17 @@
-"""Tests for audio.py segmentation logic (offline)."""
+"""Tests for audio.py segmentation logic and downloader behavior."""
+
+import sys
+import types
 
 import numpy as np
 import pytest
 
-from tellmewords.audio import segment_usable_regions, all_samples_region, _merge_regions
+from tellmewords.audio import (
+    _merge_regions,
+    _ytdlp_download,
+    all_samples_region,
+    segment_usable_regions,
+)
 
 
 def _make_silence(n: int) -> np.ndarray:
@@ -59,3 +67,40 @@ def test_voiced_regions_exclude_silence():
     for start, end in regions:
         assert start >= 44100 * 1, f"Region starts too early: {start}"
         assert end <= 44100 * 5, f"Region ends too late: {end}"
+
+
+def test_ytdlp_download_retries_fallback_format_after_http_403(monkeypatch, tmp_path):
+    attempts = []
+
+    class FakeDownloadError(Exception):
+        pass
+
+    class FakeYoutubeDL:
+        def __init__(self, opts):
+            self.opts = opts
+
+        def __enter__(self):
+            attempts.append(self.opts["format"])
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def download(self, urls):
+            if self.opts["format"] == "bestaudio[format_id=251]":
+                raise FakeDownloadError("ERROR: unable to download video data: HTTP Error 403: Forbidden")
+            (tmp_path / "abc123.audio.m4a").write_bytes(b"ok")
+
+    fake_yt_dlp = types.SimpleNamespace(
+        YoutubeDL=FakeYoutubeDL,
+        utils=types.SimpleNamespace(DownloadError=FakeDownloadError),
+    )
+    monkeypatch.setitem(sys.modules, "yt_dlp", fake_yt_dlp)
+
+    output_path = _ytdlp_download("https://example.com/watch?v=abc123", tmp_path, "abc123")
+
+    assert output_path == tmp_path / "abc123.audio.m4a"
+    assert attempts == [
+        "bestaudio[format_id=251]",
+        "bestaudio[format_id=140]",
+    ]
